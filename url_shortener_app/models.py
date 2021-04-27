@@ -15,10 +15,10 @@ class User(Base):
     is_active = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
 
+    # lazy - не ставить 'dynamic', т.к. ругается pydantic
     urls = relationship(
         'URL',
         back_populates='owner',
-        lazy='dynamic',
         passive_deletes=True,
         cascade='all, delete'
     )
@@ -39,9 +39,11 @@ class URL(Base):
     __tablename__ = 'urls'
 
     id = Column(Integer, primary_key=True, index=True)
-    link = Column(String, index=True)
-    short_url = Column(String, index=True)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    link = Column(String, index=True, nullable=False)
+    short_url = Column(String, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    title = Column(String(length=128), nullable=False)
+    description = Column(String(length=512))
 
     owner = relationship(
         User,
