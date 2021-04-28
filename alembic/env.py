@@ -1,15 +1,12 @@
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
-
 import os
 import sys
 
-from url_shortener_app.database import engine, Base
+from logging.config import fileConfig
+from alembic import context
+
+from url_shortener_app.db.database import engine
 from url_shortener_app.models import *
+from url_shortener_app.auth.models import *
 
 # Переопределение пути для упрощения импортов моделей (как будто из корневой директории)
 current_path = os.path.dirname(os.path.abspath(__file__))
