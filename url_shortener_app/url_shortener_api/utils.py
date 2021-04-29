@@ -2,7 +2,8 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from url_shortener_app import models, schemas
+from url_shortener_app import models
+from url_shortener_app.models import schemas
 
 
 def get_user_by_id(db: Session, user_id: int):

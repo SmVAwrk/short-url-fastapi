@@ -1,18 +1,9 @@
-"""
-Модели, связанные с аутентификацией и регистрацией
-"""
-
-from datetime import date
-
-from passlib.context import CryptContext
-from sqlalchemy import Column, Integer, String, Boolean, Date
+from fastapi_users.db.sqlalchemy import GUID
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from passlib.apps import custom_app_context as password_hasher
 
-from ..models.models import URL
-from ..db.database import Base
-
-
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+from url_shortener_app.db.database import Base
 
 
 # class User(Base):
@@ -24,11 +15,10 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 #     password_hash = Column(String, nullable=False)
 #     is_active = Column(Boolean, default=False)
 #     is_admin = Column(Boolean, default=False)
-#     registration_date = Column(Date, default=date.today())
 #
 #     # lazy - не ставить 'dynamic', т.к. ругается pydantic
 #     urls = relationship(
-#         URL,
+#         'URL',
 #         back_populates='owner',
 #         passive_deletes=True,
 #         cascade='all, delete'
@@ -39,8 +29,27 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 #
 #     def hash_password(self, password: str):
 #         """Метод хеширования пароля."""
-#         self.password_hash = pwd_context.hash(password)
+#         self.password_hash = password_hasher.hash(password)
 #
 #     def verify_password(self, password: str):
 #         """Метод проверки пароля."""
-#         return pwd_context.verify(password, self.password_hash)
+#         return password_hasher.verify(password, self.password_hash)
+
+
+class URL(Base):
+    __tablename__ = 'urls'
+
+    id = Column(Integer, primary_key=True, index=True)
+    link = Column(String, index=True, nullable=False)
+    short_url = Column(String, index=True, nullable=False)
+    user_id = Column(GUID, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    title = Column(String(length=128), nullable=False)
+    description = Column(String(length=512))
+
+    owner = relationship(
+        'UserTable',
+        back_populates='urls'
+    )
+
+    def __repr__(self):
+        return f'<URL: {self.short_url}>'

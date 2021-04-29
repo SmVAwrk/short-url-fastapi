@@ -1,9 +1,5 @@
-from .database import SessionLocal
+from starlette.requests import Request
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_db(request: Request):
+    return request.state.db
