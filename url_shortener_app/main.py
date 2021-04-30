@@ -1,9 +1,6 @@
 from fastapi import FastAPI
-from starlette.requests import Request
-from starlette.responses import Response
 
-
-from .db.database import SessionLocal, database
+from .core.db.database import database
 from .routes import routes
 
 app = FastAPI(debug=True)

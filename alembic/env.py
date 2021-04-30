@@ -4,9 +4,7 @@ import sys
 from logging.config import fileConfig
 from alembic import context
 
-from url_shortener_app.db.database import engine
-from url_shortener_app.models.models import *
-from url_shortener_app.fastapi_auth.models import *
+from core.db.database import engine
 
 # Переопределение пути для упрощения импортов моделей (как будто из корневой директории)
 current_path = os.path.dirname(os.path.abspath(__file__))
