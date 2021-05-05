@@ -9,9 +9,15 @@ SECRET_KEY = '26ebaf0dfd26a223e987fa5b2d0f8667d9bbb050d872a7a316b08fe8ecfa01a3'
 # Длительность действия auth токена
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24
 
+# Настройки БД
+POSTGRES_USER = os.environ.get('POSTGRES_USER')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
+POSTGRES_DB = os.environ.get('POSTGRES_DB', 'short_url_db')
+
+
 # URL базы данных
-SQLALCHEMY_DATABASE_URL = f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}" \
-                          f"@localhost/short_url_db"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}"
 
 # Настройки отправки email
 EMAIL_PORT = 587

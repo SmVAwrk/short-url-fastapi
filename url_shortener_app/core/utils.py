@@ -12,6 +12,7 @@ def send_email(
         sender_email=EMAIL_HOST_USER,
         password=EMAIL_HOST_PASSWORD
 ):
+    """Функция для отправки email-сообщения пользователю."""
     context = ssl.create_default_context()
     with smtplib.SMTP(smtp_server, port) as server:
         server.starttls(context=context)
