@@ -26,3 +26,10 @@ async def get_my_short_url(skip: int = 0, limit: int = 10, user: UserTable = Dep
 async def get_my_short_url(url_id: int, update_data: schemas.URLUpdate,
                            user: UserTable = Depends(fastapi_users.get_current_user)):
     return await utils.update_my_short_url(url_id, update_data, user=user)
+
+
+@router.delete('/my-shorties/{url_id}/', status_code=status.HTTP_204_NO_CONTENT)
+async def get_my_short_url(url_id: int, user: UserTable = Depends(fastapi_users.get_current_user)):
+    return await utils.delete_my_short_url(url_id, user=user)
+
+
