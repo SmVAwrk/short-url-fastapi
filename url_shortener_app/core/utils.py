@@ -3,7 +3,12 @@ import smtplib
 import ssl
 import string
 
+from fastapi import HTTPException
+from sqlalchemy import and_
+from starlette import status
+
 from .config import EMAIL_PORT, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+from .db.database import database
 
 PATH_LENGTH = 8
 
@@ -25,5 +30,23 @@ def send_email(
 
 
 def get_unique_path():
+    """Функция для генерации случайного короткого пути для ссылки."""
     chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+
     return ''.join([secrets.choice(chars) for _ in range(PATH_LENGTH)])
+
+
+async def get_object_or_404(table, **kwargs):
+    """
+    Функция для получения объекта из БД.
+    :param table: Объект таблицы из которой необходимо получить данные
+    :param kwargs: Поля и значения, по которым нужно идентифицировать запись
+    :return: Объект записи из таблицы или 404 ошибка
+    """
+    expression = [getattr(table.c, f'{key}') == value for key, value in kwargs.items()]
+    query = table.select().where(and_(*expression))
+    object_ = await database.fetch_one(query)
+    if not object_:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Object not found')
+
+    return object_

@@ -2,7 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy import desc
 from starlette import status
 
-from ..core.utils import get_unique_path
+from .permissions import check_owner_or_admin
+from ..core.utils import get_unique_path, get_object_or_404
 from .models import url_table
 from ..auth.models import UserTable
 from ..core.db.database import database
@@ -10,13 +11,14 @@ from . import schemas
 
 
 async def get_link(short_path: str):
-    query = url_table.select().where(url_table.c.short_url == short_path)
-    url = await database.fetch_one(query)
-    if not url:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+    """Функция для получения полного url."""
+    url = await get_object_or_404(url_table, short_url=short_path)
+
     update_query = url_table.update().values(link_count=url_table.c.link_count + 1).where(
         url_table.c.short_url == short_path)
+
     await database.execute(update_query)
+
     return url.get('link')
 
 
@@ -36,15 +38,12 @@ async def get_my_short_urls(skip: int, limit: int, user: UserTable):
 
 
 async def update_my_short_url(url_id: int, update_data: schemas.URLUpdate, user: UserTable):
-    query = url_table.select().where(url_table.c.id == url_id)
-    url = await database.fetch_one(query)
+    url = await get_object_or_404(url_table, id=url_id)
 
     if not update_data.dict(exclude_unset=True):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Empty data')
-    if not url:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='URL not found')
-    if url.get('user_id') != user.id and not user.is_superuser:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You cannot edit this url')
+
+    check_owner_or_admin(url, user)
 
     update_query = url_table.update().values(**update_data.dict(exclude_unset=True)).where(
         url_table.c.id == url_id).returning(url_table)
@@ -54,13 +53,9 @@ async def update_my_short_url(url_id: int, update_data: schemas.URLUpdate, user:
 
 
 async def delete_my_short_url(url_id: int, user: UserTable):
-    query = url_table.select().where(url_table.c.id == url_id)
-    url = await database.fetch_one(query)
+    url = await get_object_or_404(url_table, id=url_id)
 
-    if not url:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='URL not found')
-    if url.get('user_id') != user.id and not user.is_superuser:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You cannot delete this url')
+    check_owner_or_admin(url, user)
 
     delete_query = url_table.delete().where(url_table.c.id == url_id)
     await database.execute(delete_query)
