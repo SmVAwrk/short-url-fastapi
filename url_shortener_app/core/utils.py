@@ -1,7 +1,11 @@
+import secrets
 import smtplib
 import ssl
+import string
 
 from .config import EMAIL_PORT, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+
+PATH_LENGTH = 8
 
 
 def send_email(
@@ -18,3 +22,8 @@ def send_email(
         server.starttls(context=context)
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, message)
+
+
+def get_unique_path():
+    chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    return ''.join([secrets.choice(chars) for _ in range(PATH_LENGTH)])

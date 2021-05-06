@@ -16,9 +16,9 @@ class URL(Base):
     short_url = Column(String, index=True, nullable=False)
     user_id = Column(GUID, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     title = Column(String(length=128), nullable=False)
-    created_at = Column(Date, default=date.today())
+    created_at = Column(Date, default=date.today(), nullable=False)
     description = Column(String(length=512))
-    link_count = Column(Integer, default=0)
+    link_count = Column(Integer, default=0, nullable=False)
 
     owner = relationship('UserTable', back_populates='urls')
 

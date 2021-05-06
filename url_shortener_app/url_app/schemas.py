@@ -11,6 +11,8 @@ class URLBase(BaseModel):
 
 class URLCreate(URLBase):
     description: Optional[str] = None
+    link_count: int = 0
+    created_at: datetime.date = datetime.date.today()
 
 
 class URLUpdate(BaseModel):
@@ -34,8 +36,8 @@ class URLInfo(URLBase):
     id: int
     short_url: str
     description: Optional[str] = None
-    link_count: int = 0
-    created_at: datetime.date = datetime.date.today()
+    link_count: int
+    created_at: datetime.date
 
     # class Config:
     #     orm_mode = True

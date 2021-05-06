@@ -1,18 +1,27 @@
-import uuid
-
 from fastapi import HTTPException
 from sqlalchemy import desc
 from starlette import status
 
+from ..core.utils import get_unique_path
 from .models import url_table
 from ..auth.models import UserTable
 from ..core.db.database import database
 from . import schemas
 
 
+async def get_link(short_path: str):
+    query = url_table.select().where(url_table.c.short_url == short_path)
+    url = await database.fetch_one(query)
+    if not url:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+    update_query = url_table.update().values(link_count=url_table.c.link_count + 1).where(
+        url_table.c.short_url == short_path)
+    await database.execute(update_query)
+    return url.get('link')
+
+
 async def create_short_url(url: schemas.URLCreate, user: UserTable):
-    new_path = uuid.uuid4().hex
-    query = url_table.insert().values(**url.dict(), user_id=user.id, short_url=new_path[::4]).returning(url_table)
+    query = url_table.insert().values(**url.dict(), user_id=user.id, short_url=get_unique_path()).returning(url_table)
     new_url = await database.fetch_one(query)
 
     return dict(new_url)
