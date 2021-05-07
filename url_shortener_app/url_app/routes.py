@@ -33,6 +33,7 @@ async def create_short_url(url: schemas.URLCreate, user: UserTable = Depends(fas
 @api_router.get('/my-shorties/', response_model=List[schemas.URLInfo])
 async def get_my_short_url(skip: int = 0, limit: int = 10, user: UserTable = Depends(fastapi_users.get_current_user)):
     """Функция для получения списка своих url."""
+    raise TypeError
     return await utils.get_my_short_urls(skip, limit, user=user)
 
 

@@ -4,9 +4,6 @@ from typing import Optional
 from fastapi_users import models
 from pydantic import validator
 
-from ..core.db.database import database
-from .models import users_table
-
 
 class User(models.BaseUser):
     """Схема пользователя с добавлением доп. полей."""
@@ -23,9 +20,6 @@ class UserCreate(models.BaseUserCreate):
         """Кастомная валидация имени пользователя."""
         if len(v) < 2:
             raise ValueError('Username should be at least 2 characters')
-        is_username_exists = database.fetch_one(query=users_table.select())
-        if is_username_exists:
-            raise ValueError('This username already exists')
         return v
 
     @validator('password')

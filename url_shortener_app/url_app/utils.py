@@ -23,6 +23,7 @@ async def get_link(short_path: str):
 
 
 async def create_short_url(url: schemas.URLCreate, user: UserTable):
+    """Функция для создания новой записи URL в БД."""
     query = url_table.insert().values(**url.dict(), user_id=user.id, short_url=get_unique_path()).returning(url_table)
     new_url = await database.fetch_one(query)
 
@@ -30,6 +31,7 @@ async def create_short_url(url: schemas.URLCreate, user: UserTable):
 
 
 async def get_my_short_urls(skip: int, limit: int, user: UserTable):
+    """Функция для получения своих URL из БД."""
     query = url_table.select().where(url_table.c.user_id == user.id).order_by(desc(url_table.c.created_at)).offset(
         skip).limit(limit)
     my_urls = await database.fetch_all(query)
@@ -38,11 +40,13 @@ async def get_my_short_urls(skip: int, limit: int, user: UserTable):
 
 
 async def update_my_short_url(url_id: int, update_data: schemas.URLUpdate, user: UserTable):
+    """Функция для обновления записи URL в БД."""
     url = await get_object_or_404(url_table, id=url_id)
 
     if not update_data.dict(exclude_unset=True):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Empty data')
 
+    # Проверка прав доступа
     check_owner_or_admin(url, user)
 
     update_query = url_table.update().values(**update_data.dict(exclude_unset=True)).where(
@@ -53,6 +57,7 @@ async def update_my_short_url(url_id: int, update_data: schemas.URLUpdate, user:
 
 
 async def delete_my_short_url(url_id: int, user: UserTable):
+    """Функция для удаления записи URL из БД."""
     url = await get_object_or_404(url_table, id=url_id)
 
     check_owner_or_admin(url, user)

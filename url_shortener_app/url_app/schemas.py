@@ -31,10 +31,6 @@ class URL(URLBase):
     short_url: str
     description: Optional[str] = None
 
-    # class Config:
-    #     # Говорит pydantic работать не только с диктами, а с любыми типами
-    #     orm_mode = True
-
 
 class URLInfo(URLBase):
     """Схемя для получения информации о своем URL"""

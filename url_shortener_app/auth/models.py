@@ -12,11 +12,10 @@ class UserTable(Base, SQLAlchemyBaseUserTable):
     """Расширение модели пользователя бибилотеки fastapi_users."""
     __tablename__ = 'users'
 
-    username = Column(String(length=64), unique=True, index=True, nullable=False)
+    username = Column(String(length=64), nullable=False)
     registration_date = Column(Date, default=date.today())
 
     # Создание отношения к модели URL
-    # lazy - не ставить 'dynamic', т.к. ругается pydantic
     urls = relationship(
         URL,
         back_populates='owner',

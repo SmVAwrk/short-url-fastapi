@@ -6,6 +6,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Секретный ключ
 SECRET_KEY = '26ebaf0dfd26a223e987fa5b2d0f8667d9bbb050d872a7a316b08fe8ecfa01a3'
 
+# Режим дебаг
+DEBUG = False
+
 # Длительность действия auth токена
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24
 

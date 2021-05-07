@@ -1,5 +1,5 @@
 from starlette.requests import Request
-
+from fastapi.logger import logger
 from ..core.utils import send_email
 from ..core.config import EMAIL_AVAILABLE
 from .schemas import UserDB
@@ -7,7 +7,7 @@ from .schemas import UserDB
 
 def on_after_register(user: UserDB, request: Request):
     """Функция для исполнения логики после регистрации."""
-    print(f"User {user.username} has registered.")
+    logger.info(f'User {user.email} has registered.')
 
 
 def after_verification_request(user: UserDB, token: str, request: Request):
@@ -20,8 +20,9 @@ def after_verification_request(user: UserDB, token: str, request: Request):
         Subject: Верификация токена
 
 
-        Verification requested for user {user.username}. 
+        Verification requested for user {user.email}. 
         Verification token: {token}
         """.encode(encoding='utf8')
         send_email(user.email, message)
-    print(f"Verification requested for user {user.id}. Verification token: {token}")
+        logger.debug(f'Отправлено сообщение с токеном подтверждения на {user.email}.')
+    logger.info(f'Verification requested for user {user.id}. Verification token: {token}')
