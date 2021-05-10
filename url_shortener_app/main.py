@@ -27,13 +27,14 @@ def error_handler(request: Request, exc):
     )
 
 
-@app.on_event("startup")
+@app.on_event('startup')
 async def startup():
     """Событие для подключения к БД при начале обработки запроса."""
     await database.connect()
 
 
-@app.on_event("shutdown")
+@app.on_event('shutdown')
 async def shutdown():
     """Событие для отключения после обработки запроса."""
     await database.disconnect()
+

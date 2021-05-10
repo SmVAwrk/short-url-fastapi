@@ -33,7 +33,7 @@ class URL(URLBase):
 
 
 class URLInfo(URLBase):
-    """Схемя для получения информации о своем URL"""
+    """Схема для получения информации о своем URL"""
     id: int
     short_url: str
     description: Optional[str] = None
