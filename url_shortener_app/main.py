@@ -1,14 +1,17 @@
+from logging import config as log_config, getLogger
 import traceback
 
 from fastapi import FastAPI
-from fastapi.logger import logger
 from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from .core.config import DEBUG
+from .core.config import DEBUG, LOGGING_CONFIG
 from .core.db.database import database
 from .routes import routes
+
+log_config.dictConfig(LOGGING_CONFIG)
+logger = getLogger(__name__)
 
 # Создание приложения FastAPI
 app = FastAPI(debug=DEBUG)

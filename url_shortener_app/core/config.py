@@ -7,10 +7,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '26ebaf0dfd26a223e987fa5b2d0f8667d9bbb050d872a7a316b08fe8ecfa01a3'
 
 # Режим дебаг
-DEBUG = False
+DEBUG = bool(os.environ.get('APP_DEBUG', 1))
 
 # Режим для тестов
-TEST_MODE = False
+TEST_MODE = bool(os.environ.get('APP_TEST_MODE', 0))
 
 # Длительность действия auth токена
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 7
@@ -33,4 +33,37 @@ EMAIL_PORT = 587
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_AVAILABLE = bool(EMAIL_HOST and EMAIL_HOST_PASSWORD and EMAIL_HOST)
+EMAIL_AVAILABLE = bool(EMAIL_HOST and EMAIL_HOST_PASSWORD and EMAIL_HOST and not TEST_MODE)
+
+# Dict конфиг для логов
+LOGGING_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+            'datefmt': '%d-%m-%Y %H:%M:%S'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': 'logs/debug.log'
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file']
+        },
+    }
+}

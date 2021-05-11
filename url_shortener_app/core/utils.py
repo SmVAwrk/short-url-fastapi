@@ -1,3 +1,4 @@
+import logging
 import secrets
 import smtplib
 import ssl
@@ -11,6 +12,8 @@ from .config import EMAIL_PORT, EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 from .db.database import database
 
 PATH_LENGTH = 8
+
+logger = logging.getLogger(__name__)
 
 
 def send_email(
@@ -27,6 +30,7 @@ def send_email(
         server.starttls(context=context)
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, message)
+        logger.debug(f'Выполнена отправка сообщения на {receiver_email}.')
 
 
 def get_unique_path():
@@ -43,7 +47,7 @@ async def get_object_or_404(table, **kwargs):
     :param kwargs: Поля и значения, по которым нужно идентифицировать запись
     :return: Объект записи из таблицы или 404 ошибка
     """
-    expression = [getattr(table.c, f'{key}') == value for key, value in kwargs.items()]
+    expression = [getattr(table.c, key) == value for key, value in kwargs.items()]
     query = table.select().where(and_(*expression))
     object_ = await database.fetch_one(query)
     if not object_:
