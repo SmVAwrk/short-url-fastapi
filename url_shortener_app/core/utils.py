@@ -45,7 +45,7 @@ async def get_object_or_404(table, **kwargs):
     Функция для получения объекта из БД.
     :param table: Объект таблицы из которой необходимо получить данные
     :param kwargs: Поля и значения, по которым нужно идентифицировать запись
-    :return: Объект записи из таблицы или 404 ошибка
+    :return: Объект записи из таблицы или raise 404 ошибки
     """
     expression = [getattr(table.c, key) == value for key, value in kwargs.items()]
     query = table.select().where(and_(*expression))

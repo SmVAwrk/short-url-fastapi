@@ -12,12 +12,19 @@ from . import schemas, utils
 main_router = APIRouter()
 
 
+@main_router.get('/')
+async def index():
+    """Корень приложения."""
+    return RedirectResponse('/docs')
+
+
 @main_router.get('/{short_path}/')
 async def get_link(short_path: str):
     """Функция перенаправления на указанный url."""
     link = await utils.get_link(short_path)
 
     return RedirectResponse(link, status_code=status.HTTP_302_FOUND)
+
 
 # Создание роутера для crud
 api_router = APIRouter()

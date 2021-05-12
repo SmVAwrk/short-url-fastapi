@@ -32,12 +32,12 @@ def error_handler(request: Request, exc):
 
 @app.on_event('startup')
 async def startup():
-    """Событие для подключения к БД при начале обработки запроса."""
+    """Событие для подключения к БД при запуске приложения."""
     await database.connect()
 
 
 @app.on_event('shutdown')
 async def shutdown():
-    """Событие для отключения после обработки запроса."""
+    """Событие для отключения при отключении приложения."""
     await database.disconnect()
 
