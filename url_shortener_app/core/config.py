@@ -10,10 +10,9 @@ API_VERSION = 'v1'
 SECRET_KEY = '26ebaf0dfd26a223e987fa5b2d0f8667d9bbb050d872a7a316b08fe8ecfa01a3'
 
 # Режим дебаг
-DEBUG = bool(os.environ.get('APP_DEBUG', 1))
-
+DEBUG = bool(int(os.environ.get('APP_DEBUG', 1)))
 # Режим для тестов
-TEST_MODE = bool(os.environ.get('APP_TEST_MODE', 0))
+TEST_MODE = bool(int(os.environ.get('APP_TEST_MODE', 0)))
 
 # Длительность действия auth токена
 ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 7
@@ -60,7 +59,7 @@ LOGGING_CONFIG = {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'formatter': 'file',
-            'filename': 'debug.log'
+            'filename': f'{os.path.join(BASE_DIR, "logs")}/error.log'
         }
     },
     'loggers': {

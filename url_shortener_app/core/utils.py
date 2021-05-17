@@ -51,6 +51,6 @@ async def get_object_or_404(table, **kwargs):
     query = table.select().where(and_(*expression))
     object_ = await database.fetch_one(query)
     if not object_:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Object not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
 
     return object_

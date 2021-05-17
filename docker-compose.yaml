@@ -1,0 +1,39 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:12.6-alpine
+    container_name: short-url-db
+    restart: always
+    volumes:
+      - ./init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
+      - ./docker_volumes/pgdata:/var/lib/postgresql/data
+    networks:
+      - db
+    env_file:
+      - .env
+
+  app:
+    build: .
+    container_name: short-url-app
+    restart: always
+    command: bash -c "/usr/src/app/entrypoint.sh"
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/usr/src/app
+      - ./docker_volumes/alembic_migrations:/usr/src/app/alembic/versions
+      - ./docker_volumes/logs:/usr/src/app/url_shortener_app/logs
+    networks:
+      - db
+      - app
+    env_file:
+      - .env
+
+networks:
+  db:
+    driver: bridge
+  app:
+    driver: bridge
